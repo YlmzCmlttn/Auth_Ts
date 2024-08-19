@@ -1,0 +1,69 @@
+version: '3.9'
+services:
+  # API services
+  api:
+    container_name: api_container_ts
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 4000:4000
+    volumes:
+      - ./server:/usr/src/app
+      - node_modules_api:/usr/src/app/node_modules
+      - dist_api:/usr/src/app/dist
+    environment:
+      - DATABASE_URL=postgres://auth_ts_api:auth_ts_api@db_container:5432/api_db
+      - PORT=4000
+      - NAME=Auth_Ts
+      - NODE_ENV=development
+      - ACCESS_TOKEN_SECRET=0f78e8dd1177e0bf266bc8e5e72865e3674fdf09af23fd8b6b715fe64e79c6fc
+      - REFRESH_TOKEN_SECRET=12293fb1125961c8359d4e1d11c2d14f4a88ed97039d6d74643467c560ed5404
+      - URL=http://localhost:4000
+      - REDIS_URL=redis_db
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres_db
+      - redis_db
+  # PostgreSQL DB services
+  postgres_db:
+    container_name: db_container_ts
+    image: postgres:latest
+    ports:
+      - "5432:5432" # Default port for PostgreSQL
+    environment:
+      - POSTGRES_USER=auth_ts_db_admin # Replace with your desired username
+      - POSTGRES_PASSWORD=auth_ts_db_admin # Replace with your desired password
+      - POSTGRES_DB=api_db # Default database that will be created upon PostgreSQL container startup
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+  # Redis service
+  redis_db:
+    container_name: redis_container
+    image: redis:latest
+    volumes:
+      - redis_db:/data
+    ports:
+      - "6379:6379"
+
+  # Redis Insight service
+  redis_insight:
+    container_name: redis_insight_container_ts
+    image: redislabs/redisinsight:latest
+    volumes:
+      - redis_insight:/db
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis_db
+
+volumes:
+  postgres_db:
+  node_modules_api:
+  dist_api:
+  redis_db:
+  redis_insight:
+  node_modules_client:
+  build_client:
