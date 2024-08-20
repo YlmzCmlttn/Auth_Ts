@@ -5,7 +5,8 @@ import cookieParser from 'cookie-parser';
 import env from './config/env';
 import logging from './config/logger';
 import { RedisHelper } from './config/redis';
-import { PostgreSQLHelper } from './config/db';
+import { initializeDatabase, db } from '@src/config/db';
+
 import { notFound, errorHandler } from './middlewares/errorMiddleware';
 import routes from './routes';
 
@@ -13,7 +14,7 @@ const NAMESPACE = 'Server';
 const PORT = env.PORT;
 
 RedisHelper.connect();
-PostgreSQLHelper.connect();
+initializeDatabase();
 
 const app = express();
 const cors = require('cors');

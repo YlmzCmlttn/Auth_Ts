@@ -8,7 +8,7 @@ import authRoutes from './auth'
 const router = express.Router();
 
 
-router.use(asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith('/mobile')) {
         req.isMobile = true;
         req.url = req.url.replace('/mobile', ''); // Adjust the path to match the route definitions
@@ -16,7 +16,8 @@ router.use(asyncHandler(async (req: Request, res: Response, next: NextFunction) 
         req.isMobile = false;
     }
     next();
-}));
+    
+});
 
 router.use('/auth',authRoutes);
 export default router;

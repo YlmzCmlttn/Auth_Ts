@@ -7,7 +7,6 @@ const REFRESH_TOKEN_SECRET = env.REFRESH_TOKEN_SECRET;
 
 interface JwtPayload {
     userId: string;
-    username: string;
 }
 
 export const generateAccessToken = (payload: JwtPayload): string => {

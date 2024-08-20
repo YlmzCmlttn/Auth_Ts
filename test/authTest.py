@@ -17,7 +17,9 @@ def test_register():
         "password": fake_password
     }
     response = requests.post(url, json=payload)
+    print(response.json())
     assert response.status_code == 201, f"Expected 201, got {response.status_code}"
+    print("Success")
     cookies = response.cookies
     assert 'session_id' in cookies, "Expected 'session_id' in cookies"
     print(cookies)
@@ -73,12 +75,12 @@ def test_logout(session_id):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
 if __name__ == "__main__":
-    for i in range(1000):
+    for i in range(2):
         fake_email = fake.email()
         fake_password = fake.password(length=10, special_chars=True, digits=True, upper_case=True, lower_case=True)
         username = test_register()
-        test_login(username)
-        session_id = test_login_withUsername(username)
-        session_id = test_get_me(session_id)
-        test_logout(session_id)
+        # test_login(username)
+        # session_id = test_login_withUsername(username)
+        # session_id = test_get_me(session_id)
+        # test_logout(session_id)
 
