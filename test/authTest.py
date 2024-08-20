@@ -35,6 +35,7 @@ def test_login(username):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     assert response.json()['user']['username'] == username, f"Expected username {username}, got {response.json()['user']['username']}"
     cookies = response.cookies
+    print(cookies)
     assert 'session_id' in cookies, "Expected 'session_id' in cookies"
     print("Login Test Passed:", response.json())
 
@@ -50,6 +51,7 @@ def test_login_withUsername(username):
     cookies = response.cookies
     assert 'session_id' in cookies, "Expected 'session_id' in cookies"
     print("Login Test Passed:", response.json())
+    print(cookies)
     return cookies['session_id']
 
 def test_get_me(session_id):
@@ -57,16 +59,18 @@ def test_get_me(session_id):
     cookies = {'session_id': session_id}
     response = requests.get(url, cookies=cookies)
     print(response.json())
-    assert response.status_code == 200, f"Expected 200, got {response.status_code}"  
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    cookies = response.cookies
+    print(cookies)
+    assert 'session_id' in cookies, "Expected 'session_id' in cookies"
+    return cookies['session_id']
 
 def test_logout(session_id):
     url = f"{BASE_URL}/logout"
     cookies = {'session_id': session_id}
     response = requests.post(url, cookies=cookies)
     print(response.json())
-    assert response.status_code == 200, f"Expected 200, got {response.status_code}"  
-
-
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
 if __name__ == "__main__":
     for i in range(1000):
@@ -75,6 +79,6 @@ if __name__ == "__main__":
         username = test_register()
         test_login(username)
         session_id = test_login_withUsername(username)
-        test_get_me(session_id)
+        session_id = test_get_me(session_id)
         test_logout(session_id)
 

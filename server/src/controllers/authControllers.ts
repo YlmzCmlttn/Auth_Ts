@@ -51,8 +51,7 @@ const registerController = asyncHandler(async (req: Request, res: Response, next
 const loginController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { login, password } = req.validatedBody;
     let user;
-
-    // Check if login is an email or username and fetch the user accordingly
+    
     if (login.includes('@')) {
         user = await getUserWithEmailFromDb(login);
         if (!user) {

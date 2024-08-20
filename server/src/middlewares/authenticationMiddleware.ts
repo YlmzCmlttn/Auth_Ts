@@ -1,7 +1,11 @@
 import asyncHandler from 'express-async-handler';
 import { NextFunction, Request, Response } from 'express';
 import logger from '@src/config/logger';
-import { getUserFromRedis } from '@src/db/redisQuaries';
+import { 
+    getUserFromRedis,
+    deleteSessionFromRedis,
+    generateSessionAndSaveToRedis
+ } from '@src/db/redisQuaries';
 import createError from 'http-errors';
 
 const NAMESPACE = 'AuthenticationMiddleware';
@@ -14,7 +18,12 @@ const authenticate = asyncHandler( async (req: Request, res: Response, next: Nex
             logger.error(NAMESPACE, "Unauthorized", "authenticate");
             return next(createError.Unauthorized())
         }
-        req.userId = User.userId;
+        if(User.userId){
+            await deleteSessionFromRedis(session_id);
+            const sessionId = await generateSessionAndSaveToRedis(User.userId);
+            res.cookie('session_id', sessionId, { httpOnly: true });
+        }
+        req.userId = User.userId;        
         next();
     }catch(error : any){        
         next(error);
