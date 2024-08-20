@@ -7,7 +7,7 @@ import logging from './config/logger';
 import { RedisHelper } from './config/redis';
 import { PostgreSQLHelper } from './config/db';
 import { notFound, errorHandler } from './middlewares/errorMiddleware';
-import authRoutes from './routes/auth';
+import routes from './routes';
 
 const NAMESPACE = 'Server';
 const PORT = env.PORT;
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use('/api/v1/auth',authRoutes);
+app.use('/api/v1/',routes);
 app.get('/', (req, res) => {
     res.send('Server is ready!');
 });

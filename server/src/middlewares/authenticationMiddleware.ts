@@ -6,6 +6,7 @@ import {
     deleteSessionFromRedis,
     generateSessionAndSaveToRedis
  } from '@src/db/redisQuaries';
+import { verifyAccessToken } from '@src/utils/authUtils'
 import createError from 'http-errors';
 
 const NAMESPACE = 'AuthenticationMiddleware';
@@ -30,4 +31,20 @@ const authenticate = asyncHandler( async (req: Request, res: Response, next: Nex
     }
 });
 
-export { authenticate };
+const authenticateToken = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
+    // try{
+    //     const authHeader = req.headers['authorization'];
+    //     const token = authHeader && authHeader.split(' ')[1]; // Bearer token
+    //     if(!token){
+    //         logger.error(NAMESPACE, "Unauthorized", "authenticateToken");
+    //         return next(createError.Unauthorized())
+    //     }
+    //     const payload = verifyAccessToken(token);
+    //     req.userId = payload;
+    //     next();
+    // }catch(error : any){        
+    //     next(error);
+    // }
+});
+
+export { authenticate,authenticateToken };
