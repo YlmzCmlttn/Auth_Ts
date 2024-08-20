@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon",
     "build": "tsc && tsc-alias",
-    "serve": "node dist/server.js"
+    "serve": "node dist/server.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -35,8 +36,10 @@
     "@types/nodemon": "^1.19.5",
     "@types/pg": "^8.10.9",
     "@types/uuid": "^9.0.7",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1",
+    "supertest": "^7.0.0",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
   }

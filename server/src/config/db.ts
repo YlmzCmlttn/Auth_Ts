@@ -15,6 +15,7 @@ export const PostgreSQLHelper = {
             logger.success(NAMESPACE,`Connected to the PostgreSQL database.`);
         } catch (err : any) {
             logger.error(NAMESPACE,`Connection to PostgreSQL database failed. Error: ${err.message}`);
+            console.log(env.DATABASE_URL)
             //wait 5 seconds and try again
             logger.warn(NAMESPACE,`Waiting 5 seconds and trying to connect to the PostgreSQL database again.`);
             await new Promise(resolve => setTimeout(resolve, 5000));

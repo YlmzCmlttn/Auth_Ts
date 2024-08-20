@@ -2,7 +2,7 @@ version: '3.9'
 services:
   # API services
   api:
-    container_name: api_container_ts
+    container_name: api_container_auth_ts
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       - node_modules_api:/usr/src/app/node_modules
       - dist_api:/usr/src/app/dist
     environment:
-      - DATABASE_URL=postgres://auth_ts_api:auth_ts_api@db_container:5432/api_db
+      - DATABASE_URL=postgres://auth_ts_api:auth_ts_api@db_container_auth_ts:5432/api_db
       - PORT=4000
       - NAME=Auth_Ts
       - NODE_ENV=development
@@ -28,7 +28,7 @@ services:
       - redis_db
   # PostgreSQL DB services
   postgres_db:
-    container_name: db_container_ts
+    container_name: db_container_auth_ts
     image: postgres:latest
     ports:
       - "5432:5432" # Default port for PostgreSQL
@@ -38,10 +38,11 @@ services:
       - POSTGRES_DB=api_db # Default database that will be created upon PostgreSQL container startup
     volumes:
       - postgres_db:/var/lib/postgresql/data
+      - ./docker/docker-init-scripts/postgresql-scripts:/docker-entrypoint-initdb.d
 
   # Redis service
   redis_db:
-    container_name: redis_container
+    container_name: redis_container_auth_ts
     image: redis:latest
     volumes:
       - redis_db:/data
@@ -50,7 +51,7 @@ services:
 
   # Redis Insight service
   redis_insight:
-    container_name: redis_insight_container_ts
+    container_name: redis_insight_container_auth_ts
     image: redislabs/redisinsight:latest
     volumes:
       - redis_insight:/db
