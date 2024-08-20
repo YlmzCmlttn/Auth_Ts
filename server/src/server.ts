@@ -7,7 +7,7 @@ import logging from './config/logger';
 import { RedisHelper } from './config/redis';
 import { PostgreSQLHelper } from './config/db';
 import { notFound, errorHandler } from './middlewares/errorMiddleware';
-import authRoutes from './routes/authRoutes';
+import authRoutes from './routes/auth';
 
 const NAMESPACE = 'Server';
 const PORT = env.PORT;
