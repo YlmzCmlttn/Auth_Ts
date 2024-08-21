@@ -16,6 +16,11 @@ import {
     deleteSessionFromRedis 
 } from '@src/db/redisQuaries';
 
+import {
+    generateAccessToken,
+    generateRefreshToken
+} from '@src/utils/authUtils'
+
 import logger from '@src/config/logger';
 const NAMESPACE = 'AuthController';
 
@@ -30,6 +35,7 @@ const registerController = asyncHandler(async (req: Request, res: Response, next
     let username = email.split('@')[0];
     username = username.replace(/[^a-zA-Z0-9]/g, '_');
     let final_username = username;
+
     while(await isUserNameExistsInDb(final_username)){
         final_username = `${username}${++userCount}`;
     }
@@ -37,8 +43,16 @@ const registerController = asyncHandler(async (req: Request, res: Response, next
     const salt = await bcrypt.genSaltSync();
     const hashedPassword = await bcrypt.hashSync(password, salt);
     const newUser = await saveUserToDb(username,email,hashedPassword,username);
-    const sessionId = await generateSessionAndSaveToRedis(newUser.id);
-    res.cookie('session_id', sessionId, { httpOnly: true });
+
+    if(req.isMobile){
+        const accessToken = generateAccessToken({ userId: newUser.id});
+        const refreshToken = generateRefreshToken({ userId: newUser.id});
+        res.cookie('accessToken', accessToken, { httpOnly: true });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true });
+    }else{
+        const sessionId = await generateSessionAndSaveToRedis(newUser.id);
+        res.cookie('session_id', sessionId, { httpOnly: true });
+    }
     res.status(201).json({
         message: "User created successfully",
         user: {
@@ -46,6 +60,7 @@ const registerController = asyncHandler(async (req: Request, res: Response, next
             username: username
         }
     });
+    
 });
 
 const loginController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -69,9 +84,16 @@ const loginController = asyncHandler(async (req: Request, res: Response, next: N
     if (!isValid) {
         throw createError.Unauthorized('Invalid email or password');
     }
-
-    const sessionId = await generateSessionAndSaveToRedis(user.id);
-    res.cookie('session_id', sessionId, { httpOnly: true });
+    if(req.isMobile){
+        const accessToken = generateAccessToken({ userId: user.id});
+        const refreshToken = generateRefreshToken({ userId: user.id});
+        res.cookie('accessToken', accessToken, { httpOnly: true });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true });
+    }
+    else{
+        const sessionId = await generateSessionAndSaveToRedis(user.id);
+        res.cookie('session_id', sessionId, { httpOnly: true });
+    }
 
     res.status(200).json({
         message: "Login successful",
@@ -84,13 +106,18 @@ const loginController = asyncHandler(async (req: Request, res: Response, next: N
 
 const logoutController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {    
     const sessionId = req.cookies.session_id;
-        
-    if(!await deleteSessionFromRedis(sessionId)){
-        res.status(400).json({ message: 'Not logged in' });
+    if(req.isMobile){
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
     }else{
-        res.clearCookie('session_id');
-        res.status(200).json({ message: 'Logout successful' });
+        if(!await deleteSessionFromRedis(sessionId)){
+            res.status(400).json({ message: 'Not logged in' });
+        }else{
+            res.clearCookie('session_id');
+            res.status(200).json({ message: 'Logout successful' });
+        }
     }
+    
 });
 
 const getMeController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
