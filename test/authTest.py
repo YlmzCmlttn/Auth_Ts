@@ -114,8 +114,15 @@ def test_logout(session_id):
     print(response.json())
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def test_mobile_logout(access_token):
+    url = f"{BASE_URL}/mobile/auth/logout"
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.post(url, headers=headers)
+    print(response.json())
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 if __name__ == "__main__":
-    for i in range(1):
+    for i in range(100):
         fake_email = fake.email()
         fake_password = fake.password(length=10, special_chars=True, digits=True, upper_case=True, lower_case=True)
         username = test_register()
@@ -128,7 +135,6 @@ if __name__ == "__main__":
         username = test_mobile_register()
         cookies = test_mobile_login(username)
         test_mobile_get_me(cookies['accessToken'])
-        time.sleep(2*60)
-        test_mobile_get_me(cookies['accessToken'])
+        test_mobile_logout(session_id)
 
 

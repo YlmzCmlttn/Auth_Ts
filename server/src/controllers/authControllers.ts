@@ -105,11 +105,12 @@ const loginController = asyncHandler(async (req: Request, res: Response, next: N
 });
 
 const logoutController = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {    
-    const sessionId = req.cookies.session_id;
     if(req.isMobile){
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
+        res.status(200).json({ message: 'Logout successful' });
     }else{
+        const sessionId = req.cookies.session_id;
         if(!await deleteSessionFromRedis(sessionId)){
             res.status(400).json({ message: 'Not logged in' });
         }else{

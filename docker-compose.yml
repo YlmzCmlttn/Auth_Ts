@@ -56,7 +56,7 @@ services:
     volumes:
       - redis_insight:/db
     ports:
-      - "8001:8001"
+      - "5540:5540"
     depends_on:
       - redis_db
 
