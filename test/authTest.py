@@ -1,5 +1,6 @@
 import requests
 from faker import Faker
+import time
 
 # Initialize the Faker object
 fake = Faker()
@@ -97,6 +98,15 @@ def test_get_me(session_id):
     assert 'session_id' in cookies, "Expected 'session_id' in cookies"
     return cookies['session_id']
 
+def test_mobile_get_me(access_token):
+    url = f"{BASE_URL}/mobile/auth/me"
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(url, headers=headers)
+    
+    print(response.json())
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"    
+    return
+
 def test_logout(session_id):
     url = f"{BASE_URL}/auth/logout"
     cookies = {'session_id': session_id}
@@ -117,4 +127,8 @@ if __name__ == "__main__":
         fake_password = fake.password(length=10, special_chars=True, digits=True, upper_case=True, lower_case=True)
         username = test_mobile_register()
         cookies = test_mobile_login(username)
+        test_mobile_get_me(cookies['accessToken'])
+        time.sleep(2*60)
+        test_mobile_get_me(cookies['accessToken'])
+
 

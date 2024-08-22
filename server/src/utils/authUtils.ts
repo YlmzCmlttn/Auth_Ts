@@ -10,7 +10,7 @@ interface JwtPayload {
 }
 
 export const generateAccessToken = (payload: JwtPayload): string => {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '15m' }); // Access token expires in 15 minutes
+    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '1m' }); // Access token expires in 15 minutes
 };
 
 export const generateRefreshToken = (payload: JwtPayload): string => {

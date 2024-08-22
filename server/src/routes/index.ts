@@ -2,7 +2,7 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import { NextFunction, Request, Response } from 'express';
-import authRoutes from './auth'
+import authRoutes from './authRoutes'
 
 
 const router = express.Router();
